@@ -1,4 +1,4 @@
-CKFinder.addPlugin( 'myplugin', function( api ) {
+CKFinder.addPlugin( 'cropresize', function( api ) {
 
     CKFinder.dialog.add( 'cropresize', function( api ) {
 
@@ -46,7 +46,7 @@ CKFinder.addPlugin( 'myplugin', function( api ) {
                       [
                           {
                               type : 'html',
-                              html: '<iframe id="iframe_imageNotation" width="100%" style="height:100%" height="100%" src="' + CKFinder.getPluginPath('myplugin') + 'dialog.php?fileUrl=' + fileUrl + '&fileName=' + fileName + '&folderName=' + folderName + '"></iframe>'
+                              html: '<iframe id="iframe_imageNotation" width="100%" style="height:100%" height="100%" src="' + CKFinder.getPluginPath('cropresize') + 'dialog.php?fileUrl=' + fileUrl + '&fileName=' + fileName + '&folderName=' + folderName + '"></iframe>'
                           }
                       ]
                   }
