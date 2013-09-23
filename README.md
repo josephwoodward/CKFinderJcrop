@@ -12,4 +12,4 @@ To install the plugin
 
 >    include_once "plugins/cropresize/plugin.php";
 
- 4.
+
