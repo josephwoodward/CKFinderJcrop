@@ -100,4 +100,4 @@ $CommandHandler_FileSize = new CKFinder_Connector_CommandHandler_FileSize();
 $config['Hooks']['BeforeExecuteCommand'][] = array($CommandHandler_FileSize, "myCommand");
 
 // (Optional) Register a javascript plugin named "myplugin"
-$config['Plugins'][] = 'myplugin';
+$config['Plugins'][] = 'cropresize';
