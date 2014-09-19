@@ -13,3 +13,9 @@ To install the plugin
 >    include_once "plugins/cropresize/plugin.php";
 
 
+
+License
+-------
+All files are under the [The MIT License (MIT) license][license].
+
+[license]:http://en.wikipedia.org/wiki/MIT_License
