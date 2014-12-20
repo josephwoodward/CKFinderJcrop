@@ -2,6 +2,8 @@ CKFinderJcrop
 =============
 This is Ckfinder plugin that extended from https://github.com/JoeMighty/CKFinderJcrop
 
+![](http://oi58.tinypic.com/10p6grm.jpg)
+
 Features :
 
 Presets - You can define your own rules in config.php file, and easly crop-resize your images.
@@ -27,3 +29,4 @@ License
 All files are under the [The MIT License (MIT) license][license].
 
 [license]:http://en.wikipedia.org/wiki/MIT_License
+
