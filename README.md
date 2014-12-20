@@ -1,6 +1,6 @@
 CKFinderJcrop
 =============
-This is Ckfinder plugin that extended from https://github.com/JoeMighty/CKFinderJcrop
+CKFinder plugin of a much needed image cropping feature using the JQuery based JCrop (http://deepliquid.com/content/Jcrop.html).
 
 ![](http://oi58.tinypic.com/10p6grm.jpg)
 
@@ -9,10 +9,8 @@ Features :
 Presets - You can define your own rules in config.php file, and easly crop-resize your images.
 Aspect Ratio - You can cut your images with aspect ratio
 Resize - If you want, you can resize your images after cutting them.
-Over write - If you don't want to create a new file, you may overwirte it.
+Overwrite - If you don't want to create a new file, you may overwirte it.
 
-
-CKFinder plugin of a much needed image cropping feature using the JQuery based JCrop (http://deepliquid.com/content/Jcrop.html).
 
 To install the plugin
  1. Create folder "cropresize" inside CKfinder/plugins
