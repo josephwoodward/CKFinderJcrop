@@ -97,9 +97,24 @@ class Image
         $dst_r = ImageCreateTrueColor( $targ_w, $targ_h );
 
         imagecopyresampled( $dst_r, $img_r, 0, 0, $_POST['x'], $_POST['y'], $targ_w, $targ_h, $_POST['w'], $_POST['h'] );
-		
+
+        if ($_POST['post_resize']==true && is_numeric($_POST['post_resize_width']) && is_numeric($_POST['post_resize_height'])) {
+            $new_w=$_POST['post_resize_width'];
+            $new_h=$_POST['post_resize_height'];
+            $new_img=ImageCreateTrueColor( $new_w, $new_h );
+
+            imagecopyresized($new_img , $dst_r , 0, 0, 0, 0, $new_w, $new_h, $targ_w, $targ_h);
+            $dst_r=$new_img;
+        }
+
 		$saveDir = dirname($this->baseDir . $this->imageUrl);
-		$saveFile = $this->createFilename($this->fileName);
+
+        if ($_POST['post_over_write']==true) {
+            $saveFile =$this->fileName;
+        } else {
+            $saveFile = $this->createFilename($this->fileName);
+        }
+
         $filename = $saveDir. '/' . $saveFile;
         imagejpeg($dst_r, $filename, $jpeg_quality);
 		return $saveFile;

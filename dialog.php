@@ -1,6 +1,11 @@
 <?php
 
 include('lib/Boot.php');
+require('config.php');
+
+ini_set('display_errors',1);
+ini_set('display_startup_errors',1);
+error_reporting(-1);
 
 $image = new Image();
 
@@ -103,11 +108,9 @@ $image = new Image();
 <div id="left_col">
     <img src="<?php echo $image->getUrl(); ?>" id="target" alt="<?php echo $image->getName(); ?>" />
     <script type="text/javascript">
+        var jcrop_api;
         jQuery(function($){
-
-            var jcropApi;
             var pos;
-
             $('#target').Jcrop({
                 maxSize : 0,
                 boxWidth: 550,
@@ -116,14 +119,14 @@ $image = new Image();
                 onChange : showCoords,
                 onRelease : clearDimensions
             }, function() {
-                jcropApi = this;
+                jcrop_api = this;
             });
 
             function clearDimensions() {
                 $("#crop_width").val('');
                 $("#crop_height").val('');
 
-                jcropApi.setOptions({ allowSelect: true });
+                jcrop_api.setOptions({ allowSelect: true });
             }
 
             function showCoords(c)
@@ -156,7 +159,7 @@ $image = new Image();
                 height = (!isNaN(height)) ? height : 0;
                 y2 = (pos.y + parseInt(height, 10));
 
-                jcropApi.setSelect([ pos.x, pos.y, Math.round(x2), Math.round(y2) ]);
+                jcrop_api.setSelect([ pos.x, pos.y, Math.round(x2), Math.round(y2) ]);
 
                 //console.log("Width: " + pos.x + " + " + width + " = " + Math.round(x2));
                 //console.log("Height: " + pos.y + " + " + height + " = " + Math.round(y2));
@@ -170,8 +173,12 @@ $image = new Image();
 
             $("#crop_submit").bind("submit", function(event) {
 
-                $("#image_quality").val( $("#crop_image_quality").val() );
-                /*$("#image_name").val( $("#crop_image_filename").val() );*/
+                $("#image_quality").val($("#crop_image_quality").val());
+                $("#post_resize_height").val($("#resize_height").val());
+                $("#post_resize_width").val($("#resize_width").val());
+                $("#post_resize").val($("#resize").attr('checked'));
+                $("#post_over_write").val($("#over_write").attr('checked'));
+
 
                 event.preventDefault();
 
@@ -190,12 +197,62 @@ $image = new Image();
             });
 
         });
+
+        $(document).ready(
+            function(){
+                $('#options').change(function(){
+                    selected=$( "#options option:selected" );
+
+                    if ($(selected).data('aspect-ratio')==true) {
+                        $('#aspect_ratio').attr('checked','true');
+                        $('#aspect_ratio_width').val($(selected).data('aspect-ratio-width'));
+                        $('#aspect_ratio_height').val($(selected).data('aspect-ratio-height'));
+                    } else {
+                        $('#aspect_ratio').removeAttr('checked');
+                    }
+
+                    if ($(selected).data('resize')==true) {
+                        $('#resize').attr('checked','true');
+                        $('#resize_width').val($(selected).data('resize-width'));
+                        $('#resize_height').val($(selected).data('resize-height'));
+                    } else {
+                        $('#resize').removeAttr('checked');
+                    }
+
+                    if ($(selected).data('over-write')==true) {
+                        $('#over_write').attr('checked','true');
+                    } else {
+                        $('#over_write').removeAttr('checked');
+                    }
+
+                    restoreJcrop();
+                });
+
+                $('.update-api').change(function(){
+                    restoreJcrop();
+                });
+            }
+        );
+
+        function restoreJcrop() {
+            if ($('#aspect_ratio').attr('checked')){
+                jcrop_api.setOptions({ aspectRatio: $('#aspect_ratio_width').val()/$('#aspect_ratio_height').val() });
+            } else {
+                jcrop_api.setOptions({ aspectRatio: 0});
+            }
+        }
     </script>
     <form action="#" id="crop_submit" method="post">
     	<input type="hidden" id="x" name="x" />
     	<input type="hidden" id="y" name="y" />
     	<input type="hidden" id="w" name="w" />
     	<input type="hidden" id="h" name="h" />
+
+    	<input type="hidden" id="post_resize_width" name="post_resize_width" />
+    	<input type="hidden" id="post_resize_height" name="post_resize_height" />
+    	<input type="hidden" id="post_resize" name="post_resize" />
+    	<input type="hidden" id="post_over_write" name="post_over_write" />
+
     	<input type="hidden" id="image_url" name="fileUrl" value="<?php echo $image->getUrl(); ?>" />
     	<input type="hidden" id="image_name" name="fileName" value="<?php echo $image->getName(); ?>" />
     	<input type="hidden" id="folder_name" name="folderName" value="<?php echo $image->getFolderName(); ?>" />
@@ -206,7 +263,50 @@ $image = new Image();
 
 <div id="right_col">
     <h2 id="heading">Settings</h2>
+
+    <div>
+        <select id="options" name="options">
+            <?php foreach ($options as $option) : ?>
+                <option
+
+                    data-aspect-ratio="<?php echo (isset($option['resize'])?"true":"false");?>"
+                    <?php if (isset($option['aspectRatio'])):?>data-aspect-ratio-width="<?php echo $option['aspectRatio']['width'];?>" <?php endif;?>
+                    <?php if (isset($option['aspectRatio'])):?>data-aspect-ratio-height="<?php echo $option['aspectRatio']['height'];?>" <?php endif;?>
+
+                    data-resize="<?php echo (isset($option['resize'])?"true":"false");?>"
+                    <?php if (isset($option['resize'])):?>data-resize-width="<?php echo $option['resize']['width'];?>" <?php endif;?>
+                    <?php if (isset($option['resize'])):?>data-resize-height="<?php echo $option['resize']['height'];?>" <?php endif;?>
+
+                    data-over-write="<?php echo (isset($option['over_write'])?"true":"false");?>"
+                    ><?php echo $option['title'];?></option>
+            <?php endforeach;?>
+        </select>
+    </div>
+
+    <hr />
     <ul class="setting_list">
+        <li>
+            <label for="aspect_ratio" class="crop_label">Aspect Ratio</label>
+            <input class="update-api" type="checkbox" value="true" name="aspect_ratio" id="aspect_ratio">
+        </li>
+        <li><input type="text" id="aspect_ratio_width" class="crop_input update-api"  name="aspect_ratio_width" value="" /> : <input type="text" id="aspect_ratio_height" class="crop_input update-api"  name="aspect_ratio_height" value="" /></li>
+
+        <li><hr /></li>
+
+
+        <li>
+            <label for="aspect_ratio" class="crop_label">Resize</label>
+            <input class="update-api" type="checkbox" value="true" name="resize" id="resize">
+        </li>
+        <li><input type="text" id="resize_width" class="crop_input update-api"  name="resize_width" value="" /> x <input type="text" id="resize_height" class="crop_input update-api"  name="resize_height" value="" /></li>
+
+        <li>
+            <label for="aspect_ratio" class="crop_label">Overwrite</label>
+            <input class="update-api" type="checkbox" value="true" name="over_write" id="over_write">
+        </li>
+        <li><hr /></li>
+
+
         <li><label for="crop_width" class="crop_label">Crop Width:</label><input type="text" id="crop_width" class="crop_input"  name="img_width" value="" /> <span class="field_hint">pixels</span></li>
         <li><label for="crop_height" class="crop_label">Crop Height:</label><input type="text" id="crop_height" class="crop_input" name="img_height" value="" /> <span class="field_hint">pixels</span></li>
         <li><label for="crop_image_quality" class="crop_label">Image Quality:</label><input type="text" id="crop_image_quality" class="crop_input" name="crop_image_quality" value="90" /> <span class="field_hint">%</span></li>
