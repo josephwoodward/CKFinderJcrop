@@ -1,5 +1,4 @@
 <?php
-
 $options=array(
     array(
         'title'=>'Default'
